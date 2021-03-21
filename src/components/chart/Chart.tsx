@@ -5,10 +5,11 @@ import data from "../../data/boat_ramps.json";
 import { ChartElementsOptions } from "chart.js";
 
 interface PieChartProps {
-  filterMap: (data: Record<string, number>) => void;
+  filterMapBySize: (data: Record<string, number>) => void;
+  filterMapByMaterial: (material: string) => void;
 }
 
-const PieChart = ({ filterMap }: PieChartProps) => {
+const PieChart = ({ filterMapBySize, filterMapByMaterial }: PieChartProps) => {
   const sizeGroups: Record<string, number>[] = [
     { "0-50": 0 },
     { "50-200": 0 },
@@ -32,20 +33,57 @@ const PieChart = ({ filterMap }: PieChartProps) => {
     sizeGroups
   );
 
-  const onSegmentClick = (elem: any) => {
+  const materialTypes = data.features.map(
+    (feature) => feature.properties.material
+  );
+
+  const materialsSet = Array.from(new Set(materialTypes));
+
+  const groupedByMaterial = data.features.reduce(
+    (materials: { label: string; count: number }[], feature) => {
+      const matchingMaterial = materials.find(
+        (material: { label: string; count: number }) =>
+          material.label === feature.properties.material
+      );
+      if (matchingMaterial) {
+        matchingMaterial.count += 1;
+      }
+
+      return materials;
+    },
+    materialsSet.map((m) => ({
+      label: m,
+      count: 0,
+    }))
+  );
+  console.log({ groupedByMaterial });
+  const onSizeSegmentClick = (elem: any) => {
+    if (!elem.length) {
+      return;
+    }
     console.log({ elem });
     const filteredData = groupedBySize[elem[0]._index];
     console.log({ filteredData });
-    filterMap(filteredData);
+    filterMapBySize(filteredData);
+  };
+
+  const onMaterialSegmentClick = (elem: any) => {
+    if (!elem.length) {
+      return;
+    }
+    const filteredData = groupedByMaterial[elem[0]._index];
+    console.log({ elem });
+    console.log({ filteredData });
+    filterMapByMaterial(filteredData.label);
   };
 
   console.log({ groupedBySize });
   return (
     <div>
-      C
+      <legend>Sizes</legend>
       <Doughnut
         options={{
-          onClick: (e, elem) => onSegmentClick(elem),
+          onClick: (e, elem) => onSizeSegmentClick(elem),
         }}
         data={{
           labels: sizeGroups.map((group) => Object.keys(group)[0]),
@@ -53,6 +91,21 @@ const PieChart = ({ filterMap }: PieChartProps) => {
             {
               data: groupedBySize.map((group) => Object.values(group)[0]),
               backgroundColor: ["red", "blue", "green"],
+            },
+          ],
+        }}
+      />
+      <legend>Materials</legend>
+      <Doughnut
+        options={{
+          onClick: (e, elem) => onMaterialSegmentClick(elem),
+        }}
+        data={{
+          labels: materialsSet,
+          datasets: [
+            {
+              data: groupedByMaterial.map((group) => group.count),
+              backgroundColor: ["red", "blue", "green", "purple", "yellow"],
             },
           ],
         }}

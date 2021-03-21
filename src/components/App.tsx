@@ -33,10 +33,21 @@ const filterBySize = (data: any) => {
 function App() {
   const [data, setData] = useState(geoData);
 
-  const onFilterMap = (data: any) => {
+  const onFilterMapBySize = (data: any) => {
     const filtered = {
       ...geoData,
       features: geoData.features.filter(filterBySize(data)),
+    };
+
+    setData(filtered);
+  };
+
+  const onFilterMapByMaterial = (material: any) => {
+    const filtered = {
+      ...geoData,
+      features: geoData.features.filter(
+        (feature: any) => feature.properties.material === material
+      ),
     };
 
     setData(filtered);
@@ -49,8 +60,11 @@ function App() {
   return (
     <div className="App">
       <main className="container">
-        <Map filterMap={onFilterMap} data={data} />
-        <Chart filterMap={onFilterMap} />
+        <Map data={data} />
+        <Chart
+          filterMapBySize={onFilterMapBySize}
+          filterMapByMaterial={onFilterMapByMaterial}
+        />
       </main>
     </div>
   );

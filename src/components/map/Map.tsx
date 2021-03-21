@@ -19,11 +19,10 @@ const dataLayer: LayerProps = {
 };
 
 interface MapProps {
-  filterMap: (d: any) => void;
   data: any;
 }
 
-const Map = ({ filterMap, data }: MapProps) => {
+const Map = ({ data }: MapProps) => {
   const [viewport, setViewport] = useState({
     latitude: -28.0167,
     longitude: 153.4,
