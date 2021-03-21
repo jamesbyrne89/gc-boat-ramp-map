@@ -1,10 +1,25 @@
 .App {
   text-align: center;
+  min-height: 100vh;
+  min-width: 100vw;
+  display: flex;
+  background: #1a1a1a;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 .App-logo {
   height: 40vmin;
   pointer-events: none;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  margin: 3rem;
+  width: 100%;
 }
 
 @media (prefers-reduced-motion: no-preference) {
