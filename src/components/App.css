@@ -1,11 +1,20 @@
+:root {
+  --near-black: #040404;
+  --lighter-black: #1b1b1b;
+  --card-border-radius: 1rem;
+  --card-vertical-spacing: 1.25rem;
+  --card-horizontal-spacing: 1.25rem;
+  --primary-font-color: white;
+}
+
 .App {
   text-align: center;
   min-height: 100vh;
   min-width: 100vw;
   display: flex;
-  background: #1a1a1a;
+  background: var(--near-black);
+  color: var(--primary-font-color);
 }
-
 * {
   box-sizing: border-box;
 }
@@ -16,38 +25,8 @@
 }
 
 .container {
-  display: grid;
-  grid-template-columns: 3fr 1fr;
-  margin: 3rem;
   width: 100%;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.chart-container {
 }

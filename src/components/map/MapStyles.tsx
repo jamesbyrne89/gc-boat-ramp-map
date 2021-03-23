@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 
-export const MapStyles = styled.div`
+export const MapStyles = styled.section`
   position: relative;
-  border: solid 3px black;
+  height: 100%;
 `;

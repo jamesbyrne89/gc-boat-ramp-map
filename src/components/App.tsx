@@ -2,54 +2,23 @@ import { useState, useEffect } from "react";
 
 import "./App.css";
 
-import Chart from "./chart/Chart";
 import Map from "./map/Map";
 import geoData from "../data/boat_ramps.json";
-
-const filterBySize = (data: any) => {
-  const [label] = Object.keys(data);
-  let range: [number, number] = [0, 0];
-  console.log({ label });
-  if (label === "0-50") {
-    range = [0, 50];
-  }
-  if (label === "50-200") {
-    range = [50, 200];
-  }
-  if (label === "200-526") {
-    range = [200, 526];
-  }
-
-  return (feature: any) => {
-    console.log({ range });
-    const [lowerBound, upperBound] = range;
-    return (
-      feature.properties.area_ >= lowerBound &&
-      feature.properties.area_ < upperBound
-    );
-  };
-};
+import SizeChart from "./size-chart/SizeChart";
+import MaterialChart from "./material-chart/MaterialChart";
+import SidePanel from "./side-panel/SidePanel";
 
 function App() {
   const [data, setData] = useState(geoData);
 
-  const onFilterMapBySize = (data: any) => {
+  const filterMapData = (callback: (f: any) => boolean) => {
+    const ramps = data.features;
+    console.log(callback);
     const filtered = {
-      ...geoData,
-      features: geoData.features.filter(filterBySize(data)),
+      ...data,
+      features: ramps.filter(callback),
     };
-
-    setData(filtered);
-  };
-
-  const onFilterMapByMaterial = (material: any) => {
-    const filtered = {
-      ...geoData,
-      features: geoData.features.filter(
-        (feature: any) => feature.properties.material === material
-      ),
-    };
-
+    console.log(ramps.filter(callback));
     setData(filtered);
   };
 
@@ -61,10 +30,14 @@ function App() {
     <div className="App">
       <main className="container">
         <Map data={data} />
-        <Chart
-          filterMapBySize={onFilterMapBySize}
-          filterMapByMaterial={onFilterMapByMaterial}
-        />
+        <SidePanel>
+          <div className="chart-container">
+            <SizeChart onFilterMap={filterMapData} />
+          </div>
+          <div className="chart-container">
+            <MaterialChart onFilterMap={filterMapData} />
+          </div>
+        </SidePanel>
       </main>
     </div>
   );

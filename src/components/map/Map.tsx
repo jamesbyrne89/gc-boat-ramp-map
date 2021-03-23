@@ -13,7 +13,7 @@ const dataLayer: LayerProps = {
   id: "data",
   type: "fill",
   paint: {
-    "fill-color": "#00ffff",
+    "fill-color": "#CD45A2",
     "fill-opacity": 1,
   },
 };
@@ -34,11 +34,10 @@ const Map = ({ data }: MapProps) => {
   return (
     <MapStyles>
       <ReactMapGL
-        // mapStyle="mapbox://styles/jamesbyrne89/ckmi53pza3jzb17oi9jribqlf"
+        mapStyle="mapbox://styles/jamesbyrne89/ckmltmwsu4jj417ofa7b7avsx"
         {...viewport}
         mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
         onViewportChange={(vp: any) => {
-          console.log({ vp });
           setViewport(vp);
         }}
       >
