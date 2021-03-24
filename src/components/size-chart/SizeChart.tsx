@@ -1,71 +1,45 @@
 import { Feature, GeoJsonProperties, Geometry } from "geojson";
 import { Doughnut } from "react-chartjs-2";
-import data from "../../data/boat_ramps.json";
+import { useAppDispatch, useAppSelector } from "../../hooks";
 
-interface PieChartProps {
-  onFilterMap: (
-    callback: (feature: Feature<Geometry, GeoJsonProperties>) => boolean
-  ) => void;
-}
+const SizeChart = () => {
+  const dispatch = useAppDispatch();
+  const ramps = useAppSelector((state) => state.ramps);
 
-const sizeGroups: {
-  label: string;
-  count: number;
-  range: [number, number];
-}[] = [
-  { label: "0-50", count: 0, range: [0, 50] },
-  { label: "50-200", count: 0, range: [50, 200] },
-  { label: "200-526", count: 0, range: [200, 526] },
-];
+  const groupedBySize =
+    ramps?.features.reduce(
+      (
+        groups: {
+          label: string;
+          count: number;
+          range: [number, number];
+        }[],
+        feature: Feature<Geometry, GeoJsonProperties>
+      ) => {
+        if (feature?.properties?.area_ < 50) {
+          groups[0].count += 1;
+        }
+        if (
+          feature?.properties?.area_ >= 50 &&
+          feature?.properties?.area_ < 200
+        ) {
+          groups[1].count += 1;
+        }
+        if (
+          feature?.properties?.area_ >= 200 &&
+          feature?.properties?.area_ < 526
+        ) {
+          groups[2].count += 1;
+        }
 
-const SizeChart = ({ onFilterMap }: PieChartProps) => {
-  const groupedBySize = data.features.reduce(
-    (
-      groups: {
-        label: string;
-        count: number;
-        range: [number, number];
-      }[],
-      feature: any
-    ) => {
-      if (feature.properties.area_ < 50) {
-        groups[0].count += 1;
-      }
-      if (feature.properties.area_ >= 50 && feature?.properties?.area_ < 200) {
-        groups[1].count += 1;
-      }
-      if (feature.properties.area_ >= 200 && feature?.properties?.area_ < 526) {
-        groups[2].count += 1;
-      }
-
-      return groups;
-    },
-    sizeGroups
-  );
-
-  // const filterBySize = (data: any) => {
-  //   const [label] = Object.keys(data);
-  //   let range: [number, number] = [0, 0];
-  //   console.log({ label });
-  //   if (label === "0-50") {
-  //     range = [0, 50];
-  //   }
-  //   if (label === "50-200") {
-  //     range = [50, 200];
-  //   }
-  //   if (label === "200-526") {
-  //     range = [200, 526];
-  //   }
-
-  //   return (feature: any) => {
-  //     console.log({ range });
-  //     const [lowerBound, upperBound] = range;
-  //     return (
-  //       feature.properties.area_ >= lowerBound &&
-  //       feature.properties.area_ < upperBound
-  //     );
-  //   };
-  // };
+        return groups;
+      },
+      [
+        { label: "0-50", count: 0, range: [0, 50] },
+        { label: "50-200", count: 0, range: [50, 200] },
+        { label: "200-526", count: 0, range: [200, 526] },
+      ]
+    ) || [];
 
   const onSizeSegmentClick = (elem: any) => {
     if (!elem.length) {
@@ -74,29 +48,40 @@ const SizeChart = ({ onFilterMap }: PieChartProps) => {
 
     const { _index: index } = elem[0];
     const [lowerBound, upperBound] = groupedBySize[index].range;
-    console.log({ lowerBound, upperBound });
-    onFilterMap(
-      (feature) =>
-        feature?.properties?.area_ >= lowerBound &&
-        feature?.properties?.area_ < upperBound
-    );
+
+    dispatch({
+      type: "FILTER_BY_SIZE",
+      payload: ramps?.features.filter(
+        (feature) =>
+          feature?.properties?.area_ >= lowerBound &&
+          feature?.properties?.area_ < upperBound
+      ),
+    });
   };
 
-  console.log({ groupedBySize });
   return (
     <div>
       <Doughnut
+        width={200}
+        height={200}
         options={{
+          responsive: false,
           title: {
             display: true,
             text: "Sizes",
             fontSize: 20,
             fontColor: "white",
           },
+          legend: {
+            labels: {
+              fontColor: "white",
+              fontSize: 12,
+            },
+          },
           onClick: (e, elem) => onSizeSegmentClick(elem),
         }}
         data={{
-          labels: sizeGroups.map((group) => group.label),
+          labels: groupedBySize.map((group) => group.label),
           datasets: [
             {
               data: groupedBySize.map((group) => group.count),

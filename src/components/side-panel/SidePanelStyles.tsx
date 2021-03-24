@@ -8,7 +8,6 @@ const SidePanelStyles = styled.section`
 
   display: flex;
   flex-direction: column;
-  justify-content: center;
   gap: 4rem;
 
   background: var(--lighter-black);

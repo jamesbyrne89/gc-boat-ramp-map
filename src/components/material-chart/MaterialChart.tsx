@@ -1,58 +1,63 @@
 import { Feature, GeoJsonProperties, Geometry } from "geojson";
-import React from "react";
 import { Doughnut } from "react-chartjs-2";
-import data from "../../data/boat_ramps.json";
-import { deduplicateArray } from "../../utils/helpers";
+import { useAppDispatch, useAppSelector } from "../../hooks";
 
-interface MaterialChartProps {
-  onFilterMap: (
-    callback: (feature: Feature<Geometry, GeoJsonProperties>) => boolean
-  ) => void;
-}
+const MaterialChart = () => {
+  const ramps = useAppSelector((state) => state.ramps);
+  const materialLabels = useAppSelector((state) => state.materials || []);
+  const dispatch = useAppDispatch();
 
-const MaterialChart = ({ onFilterMap }: MaterialChartProps) => {
-  const materials = data.features.map((feature) => feature.properties.material);
+  const groupedByMaterial =
+    ramps?.features.reduce(
+      (materials: { label: string; count: number }[], feature) => {
+        const matchingMaterial = materials.find(
+          (material: { label: string; count: number }) =>
+            material.label === feature?.properties?.material
+        );
+        if (matchingMaterial) {
+          matchingMaterial.count += 1;
+        }
 
-  const materialLabels = deduplicateArray(materials);
-
-  const groupedByMaterial = data.features.reduce(
-    (materials: { label: string; count: number }[], feature) => {
-      const matchingMaterial = materials.find(
-        (material: { label: string; count: number }) =>
-          material.label === feature.properties.material
-      );
-      if (matchingMaterial) {
-        matchingMaterial.count += 1;
-      }
-
-      return materials;
-    },
-    materialLabels.map((m) => ({
-      label: m,
-      count: 0,
-    }))
-  );
+        return materials;
+      },
+      materialLabels.map((m) => ({
+        label: m,
+        count: 0,
+      }))
+    ) || [];
 
   const onMaterialSegmentClick = (elem: any) => {
     if (!elem.length) {
       return;
     }
 
-    onFilterMap(
-      (feature: Feature<Geometry, GeoJsonProperties>) =>
-        feature?.properties?.material === elem[0]._view.label
-    );
+    dispatch({
+      type: "FILTER_BY_MATERIAL",
+      payload: ramps?.features.filter(
+        (feature: Feature<Geometry, GeoJsonProperties>) =>
+          feature?.properties?.material === elem[0]._view.label
+      ),
+    });
   };
 
   return (
     <div>
       <Doughnut
+        width={200}
+        height={200}
         options={{
+          responsive: false,
           title: {
             display: true,
             text: "Materials",
             fontSize: 20,
             fontColor: "white",
+          },
+          legend: {
+            labels: {
+              fontColor: "white",
+              fontSize: 12,
+            },
           },
 
           onClick: (e, elem) => onMaterialSegmentClick(elem),

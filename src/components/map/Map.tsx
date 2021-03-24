@@ -1,11 +1,6 @@
-import {
-  Feature,
-  FeatureCollection,
-  GeoJsonProperties,
-  Geometry,
-} from "geojson";
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import ReactMapGL, { Layer, LayerProps, Source } from "react-map-gl";
+import { useAppSelector } from "../../hooks";
 import { MapStyles } from "./MapStyles";
 import "./MapStyles.tsx";
 
@@ -18,11 +13,8 @@ const dataLayer: LayerProps = {
   },
 };
 
-interface MapProps {
-  data: any;
-}
-
-const Map = ({ data }: MapProps) => {
+const Map = () => {
+  const ramps = useAppSelector((state) => state.ramps);
   const [viewport, setViewport] = useState({
     latitude: -28.0167,
     longitude: 153.4,
@@ -41,7 +33,7 @@ const Map = ({ data }: MapProps) => {
           setViewport(vp);
         }}
       >
-        <Source type="geojson" data={data as any}>
+        <Source type="geojson" data={ramps}>
           <Layer {...dataLayer} />
         </Source>
       </ReactMapGL>

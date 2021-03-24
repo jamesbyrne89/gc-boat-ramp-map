@@ -7,13 +7,16 @@
   --primary-font-color: white;
 }
 
+html {
+  background: var(--near-black);
+  color: var(--primary-font-color);
+}
+
 .App {
   text-align: center;
   min-height: 100vh;
   min-width: 100vw;
   display: flex;
-  background: var(--near-black);
-  color: var(--primary-font-color);
 }
 * {
   box-sizing: border-box;
@@ -28,5 +31,18 @@
   width: 100%;
 }
 
-.chart-container {
+.centered {
+  min-width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reset-btn {
+  border-radius: 0.25rem;
+  border: solid 2px white;
+  background: none;
+  line-height: 1.5;
+  color: white;
 }
