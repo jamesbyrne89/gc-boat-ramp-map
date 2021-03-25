@@ -16,22 +16,16 @@ const SizeChart = () => {
         }[],
         feature: Feature<Geometry, GeoJsonProperties>
       ) => {
-        if (feature?.properties?.area_ < 50) {
-          groups[0].count += 1;
+        const correctGroup = groups.find((g) => {
+          const [lowerBound, upperBound] = g.range;
+          return (
+            feature?.properties?.area_ >= lowerBound &&
+            feature?.properties?.area_ < upperBound
+          );
+        });
+        if (correctGroup) {
+          correctGroup.count += 1;
         }
-        if (
-          feature?.properties?.area_ >= 50 &&
-          feature?.properties?.area_ < 200
-        ) {
-          groups[1].count += 1;
-        }
-        if (
-          feature?.properties?.area_ >= 200 &&
-          feature?.properties?.area_ < 526
-        ) {
-          groups[2].count += 1;
-        }
-
         return groups;
       },
       [
